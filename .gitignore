@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project specific
+*.log
+.DS_Store
+uploads/
+temp/
+
+# n8n
+.n8n/
+n8n-data/
+
+# Environment
+.env
+*.env
+
+# Vector Database
+chroma_db/
+*.sqlite3
+*.bin
+*.pickle
