@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}AI Medical A2A Consultation - 홈{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container-fluid py-5 text-center">
+                <h1 class="display-4 fw-bold hero-title">
+                    <i class="fas fa-robot"></i> AI Medical A2A Consultation
+                </h1>
+                <p class="col-md-8 mx-auto fs-4 hero-subtitle">
+                    전문 AI 에이전트들이 협력하여 제공하는 의료 상담 시스템
+                </p>
+                <a href="{{ url_for('consultation') }}" class="btn btn-hero btn-lg">
+                    <i class="fas fa-comments"></i> 상담 시작하기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 시스템 소개 -->
+    <div class="col-md-8">
+        <h2><i class="fas fa-info-circle text-primary"></i> 시스템 소개</h2>
+        <p class="lead">
+            AI Medical A2A (Agent-to-Agent) Consultation System은 여러 전문 AI 에이전트들이 
+            협력하여 종합적인 의료 정보를 제공하는 혁신적인 시스템입니다.
+        </p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card agent-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-md" style="color: #17a2b8;"></i> DR_BLADDER
+                        </h5>
+                        <p class="card-text">
+                            방광암 전문 AI 에이전트로, 방광 관련 질환에 대한 
+                            전문적인 의료 정보를 제공합니다.
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> 방광암 진단 정보</li>
+                            <li><i class="fas fa-check text-success"></i> 치료 가이드라인</li>
+                            <li><i class="fas fa-check text-success"></i> 예방 및 관리법</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card agent-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-md" style="color: #ffc107;"></i> DR_PROSTATE
+                        </h5>
+                        <p class="card-text">
+                            전립선 질환 전문 AI 에이전트로, 전립선 관련 질환에 대한 
+                            전문적인 의료 정보를 제공합니다.
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> 전립선암 정보</li>
+                            <li><i class="fas fa-check text-success"></i> 전립선비대증</li>
+                            <li><i class="fas fa-check text-success"></i> 치료 및 관리법</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h3><i class="fas fa-cogs text-primary"></i> 오케스트레이터</h3>
+            <p>
+                두 전문 에이전트의 의견을 종합하여 더욱 포괄적이고 균형잡힌 의료 정보를 제공합니다. 
+                gemma3:4b 모델을 기반으로 동작하며, 각 전문가의 의견을 분석하고 통합하여 
+                환자에게 최적의 정보를 전달합니다.
+            </p>
+        </div>
+    </div>
+    
+    <!-- 빠른 액세스 -->
+    <div class="col-md-4">
+        <h3><i class="fas fa-rocket text-primary"></i> 빠른 시작</h3>
+        
+        <div class="quick-access-list">
+            <a href="{{ url_for('consultation') }}" class="quick-access-item">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1"><i class="fas fa-comments"></i> 의료 상담</h5>
+                        <p class="mb-1">전문 AI 에이전트들에게 의료 질문을 해보세요.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('health_check') }}" class="quick-access-item">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1"><i class="fas fa-heartbeat"></i> 시스템 상태</h5>
+                        <p class="mb-1">모든 AI 에이전트들의 상태를 확인합니다.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="{{ url_for('about') }}" class="quick-access-item">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1"><i class="fas fa-info-circle"></i> 시스템 정보</h5>
+                        <p class="mb-1">시스템의 기술적 세부사항을 확인합니다.</p>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+        
+        <!-- 주요 기능 -->
+        <div class="mt-4">
+            <h4><i class="fas fa-star text-warning"></i> 주요 기능</h4>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="fas fa-users text-primary"></i> 
+                    <strong>다중 에이전트 협력</strong><br>
+                    <small class="text-muted">여러 전문 AI가 동시에 분석</small>
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-brain text-success"></i> 
+                    <strong>지능형 의견 종합</strong><br>
+                    <small class="text-muted">각 전문가 의견을 통합 분석</small>
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-clock text-info"></i> 
+                    <strong>실시간 진행 상황</strong><br>
+                    <small class="text-muted">상담 과정을 실시간 추적</small>
+                </li>
+                <li class="mb-2">
+                    <i class="fas fa-shield-alt text-danger"></i> 
+                    <strong>안전한 의료 정보</strong><br>
+                    <small class="text-muted">검증된 의료 가이드라인 기반</small>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 중요 공지 -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-exclamation-triangle"></i> 중요한 의학적 면책조항
+            </h4>
+            <p>
+                이 AI 의료 상담 시스템은 <strong>교육 및 정보 제공 목적</strong>으로만 사용됩니다. 
+                제공되는 정보는 실제 의료 진단, 치료, 또는 전문적인 의학적 조언을 대체하지 않습니다.
+            </p>
+            <hr>
+            <p class="mb-0">
+                <strong>실제 건강 문제가 있으시다면 반드시 전문 의료진과 상담하시기 바랍니다.</strong>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 페이지 로드 시 애니메이션 효과
+    const cards = document.querySelectorAll('.agent-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 200);
+    });
+});
+</script>
+{% endblock %}

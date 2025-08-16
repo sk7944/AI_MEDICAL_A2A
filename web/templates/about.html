@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}시스템 소개 - AI Medical A2A{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="text-center mb-4">
+            <i class="fas fa-info-circle" style="color: var(--accent-blue);"></i> AI Medical A2A 시스템 소개
+        </h1>
+    </div>
+</div>
+
+<!-- 시스템 개요 -->
+<div class="row mb-5">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header" style="background: var(--gradient-primary); color: var(--text-light);">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-robot"></i> Agent-to-Agent (A2A) 의료 상담 시스템
+                </h3>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    AI Medical A2A는 다중 전문 AI 에이전트들이 협력하여 종합적인 의료 정보를 제공하는 
+                    혁신적인 의료 상담 시스템입니다.
+                </p>
+                <p>
+                    이 시스템은 Agent-to-Agent (A2A) 아키텍처를 기반으로 하여, 
+                    각각의 전문 영역을 담당하는 AI 에이전트들이 독립적으로 작동하면서도 
+                    서로 협력하여 더욱 정확하고 포괄적인 의료 정보를 제공합니다.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 시스템 아키텍처 -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2><i class="fas fa-sitemap text-primary"></i> 시스템 아키텍처</h2>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header text-center" style="background: linear-gradient(135deg, #17a2b8, #138496); color: white;">
+                <h4><i class="fas fa-user-md"></i> DR_BLADDER</h4>
+            </div>
+            <div class="card-body">
+                <h5>방광암 전문 AI</h5>
+                <ul>
+                    <li>방광암 진단 정보</li>
+                    <li>치료 가이드라인</li>
+                    <li>예방 및 관리 방법</li>
+                    <li>최신 의료 연구 정보</li>
+                </ul>
+                <div class="alert alert-info">
+                    <small>
+                        <strong>기술 스택:</strong><br>
+                        • Ollama + gemma3:4b<br>
+                        • ChromaDB + LangChain<br>
+                        • RAG (Retrieval-Augmented Generation)<br>
+                        • FastAPI (Port: 8001)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header text-center" style="background: linear-gradient(135deg, #ffc107, #e0a800); color: #212529;">
+                <h4><i class="fas fa-user-md"></i> DR_PROSTATE</h4>
+            </div>
+            <div class="card-body">
+                <h5>전립선 질환 전문 AI</h5>
+                <ul>
+                    <li>전립선암 정보</li>
+                    <li>전립선비대증</li>
+                    <li>치료 및 관리 방법</li>
+                    <li>예방 및 건강 관리</li>
+                </ul>
+                <div class="alert alert-warning">
+                    <small>
+                        <strong>기술 스택:</strong><br>
+                        • Ollama + gemma3:4b<br>
+                        • ChromaDB + LangChain<br>
+                        • RAG (Retrieval-Augmented Generation)<br>
+                        • FastAPI (Port: 8002)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header text-center" style="background: linear-gradient(135deg, var(--success-color), #388e3c); color: white;">
+                <h4><i class="fas fa-brain"></i> Orchestrator</h4>
+            </div>
+            <div class="card-body">
+                <h5>의료 상담 오케스트레이터</h5>
+                <ul>
+                    <li>다중 에이전트 조정</li>
+                    <li>의견 종합 및 분석</li>
+                    <li>실시간 진행 상황 추적</li>
+                    <li>종합 의료 상담 결과 생성</li>
+                </ul>
+                <div class="alert alert-success">
+                    <small>
+                        <strong>기술 스택:</strong><br>
+                        • Ollama + gemma3:4b<br>
+                        • 비동기 HTTP 통신<br>
+                        • 의견 종합 알고리즘<br>
+                        • FastAPI (Port: 8003)
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 기술적 특징 -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2><i class="fas fa-cogs text-primary"></i> 주요 기술적 특징</h2>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-database"></i> RAG (Retrieval-Augmented Generation)</h4>
+            </div>
+            <div class="card-body">
+                <p>각 AI 에이전트는 RAG 기술을 사용하여 검증된 의료 가이드라인과 연구 자료를 기반으로 답변을 생성합니다.</p>
+                <ul>
+                    <li><strong>ChromaDB:</strong> 벡터 데이터베이스로 의료 문서 저장</li>
+                    <li><strong>LangChain:</strong> 문서 검색 및 처리 파이프라인</li>
+                    <li><strong>PDF 처리:</strong> 의료 가이드라인 자동 임베딩</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-network-wired"></i> 비동기 다중 에이전트 통신</h4>
+            </div>
+            <div class="card-body">
+                <p>오케스트레이터는 여러 전문 에이전트에게 동시에 질의하여 효율적인 상담을 제공합니다.</p>
+                <ul>
+                    <li><strong>병렬 처리:</strong> 동시 다중 에이전트 질의</li>
+                    <li><strong>실시간 추적:</strong> 상담 진행 상황 모니터링</li>
+                    <li><strong>장애 처리:</strong> 개별 에이전트 장애 시 복구 전략</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 데이터 플로우 -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2><i class="fas fa-stream text-primary"></i> 데이터 플로우</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-2">
+                        <div class="p-3 rounded" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                            <i class="fas fa-user fa-2x" style="color: var(--accent-blue);"></i>
+                            <p class="mt-2" style="color: var(--text-light);"><strong>사용자</strong><br>질문 입력</p>
+                        </div>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-arrow-right fa-2x text-muted"></i>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-3 rounded" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                            <i class="fas fa-globe fa-2x" style="color: var(--success-color);"></i>
+                            <p class="mt-2" style="color: var(--text-light);"><strong>웹 인터페이스</strong><br>Flask (Port: 5000)</p>
+                        </div>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-arrow-right fa-2x text-muted"></i>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-3 rounded" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                            <i class="fas fa-brain fa-2x" style="color: var(--accent-blue);"></i>
+                            <p class="mt-2" style="color: var(--text-light);"><strong>오케스트레이터</strong><br>질의 분배 및 종합</p>
+                        </div>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-arrows-alt-h fa-2x text-muted"></i>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="p-2 rounded" style="background: #17a2b8; color: white;">
+                                    <i class="fas fa-user-md"></i>
+                                    <p class="mt-1 small"><strong>DR_BLADDER</strong></p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded" style="background: #ffc107; color: #212529;">
+                                    <i class="fas fa-user-md"></i>
+                                    <p class="mt-1 small"><strong>DR_PROSTATE</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>처리 과정:</h5>
+                    <ol>
+                        <li><strong>질문 접수:</strong> 웹 인터페이스를 통해 사용자 질문 수신</li>
+                        <li><strong>질의 분배:</strong> 오케스트레이터가 전문 에이전트들에게 동시 질의</li>
+                        <li><strong>개별 분석:</strong> 각 전문 AI가 RAG를 통해 독립적으로 분석</li>
+                        <li><strong>의견 종합:</strong> 오케스트레이터가 gemma3:4b로 의견 통합</li>
+                        <li><strong>결과 제공:</strong> 개별 의견과 종합 의견을 함께 제공</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 시스템 요구사항 -->
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-server"></i> 시스템 요구사항</h4>
+            </div>
+            <div class="card-body">
+                <h5>하드웨어</h5>
+                <ul>
+                    <li>CPU: 4 코어 이상 권장</li>
+                    <li>RAM: 8GB 이상 권장</li>
+                    <li>저장공간: 10GB 이상</li>
+                    <li>GPU: 선택사항 (성능 향상)</li>
+                </ul>
+                
+                <h5>소프트웨어</h5>
+                <ul>
+                    <li>Python 3.8+</li>
+                    <li>Ollama</li>
+                    <li>chromadb, langchain, fastapi, flask</li>
+                    <li>aiohttp, uvicorn</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-network-wired"></i> 네트워크 아키텍처</h4>
+            </div>
+            <div class="card-body">
+                <h5>포트 구성</h5>
+                <ul>
+                    <li><strong>5000:</strong> Flask 웹 인터페이스</li>
+                    <li><strong>8001:</strong> DR_BLADDER API</li>
+                    <li><strong>8002:</strong> DR_PROSTATE API</li>
+                    <li><strong>8003:</strong> Medical Orchestrator API</li>
+                    <li><strong>11434:</strong> Ollama 서버 (기본값)</li>
+                </ul>
+                
+                <h5>통신 프로토콜</h5>
+                <ul>
+                    <li>HTTP/HTTPS REST API</li>
+                    <li>JSON 데이터 형식</li>
+                    <li>비동기 처리</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 개발 정보 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header" style="background: var(--gradient-primary); color: var(--text-light);">
+                <h4><i class="fas fa-code"></i> 개발 정보</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>개발 언어 및 프레임워크</h5>
+                        <ul>
+                            <li><strong>Python:</strong> 주요 개발 언어</li>
+                            <li><strong>FastAPI:</strong> API 서버 프레임워크</li>
+                            <li><strong>Flask:</strong> 웹 인터페이스</li>
+                            <li><strong>LangChain:</strong> LLM 애플리케이션 프레임워크</li>
+                            <li><strong>ChromaDB:</strong> 벡터 데이터베이스</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>AI 모델 및 기술</h5>
+                        <ul>
+                            <li><strong>Ollama:</strong> 로컬 LLM 실행 환경</li>
+                            <li><strong>gemma3:4b:</strong> 의료 분석 모델</li>
+                            <li><strong>RAG:</strong> 검색 증강 생성</li>
+                            <li><strong>Embedding:</strong> 문서 벡터화</li>
+                            <li><strong>Multi-Agent:</strong> 다중 에이전트 협력</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <h5>프로젝트 구조</h5>
+                        <pre style="background: rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 8px; color: var(--text-light);"><code>AI_MEDICAL_A2A/
+├── agents/
+│   ├── bladder/          # DR_BLADDER 에이전트
+│   └── prostate/         # DR_PROSTATE 에이전트
+├── orchestrator/         # 의료 상담 오케스트레이터
+├── web/                  # Flask 웹 인터페이스
+├── vector_db/           # ChromaDB 데이터베이스
+└── docs/                # 의료 가이드라인 문서</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 면책조항 -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading">
+                <i class="fas fa-exclamation-triangle"></i> 중요한 의학적 면책조항
+            </h4>
+            <p>
+                이 AI Medical A2A 시스템은 <strong>교육 및 연구 목적</strong>으로 개발되었습니다. 
+                시스템이 제공하는 모든 정보는 참고용이며, 실제 의료 진단, 치료, 또는 전문적인 의학적 조언을 대체하지 않습니다.
+            </p>
+            <hr>
+            <ul class="mb-0">
+                <li>실제 건강 문제가 있으시다면 반드시 전문 의료진과 상담하시기 바랍니다</li>
+                <li>응급상황에서는 즉시 응급실을 방문하거나 119에 신고하세요</li>
+                <li>AI가 제공하는 정보는 개인의 특별한 상황을 고려하지 않은 일반적인 정보입니다</li>
+                <li>의료 결정을 내리기 전에 반드시 전문 의료진과 상의하세요</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 카드 애니메이션
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+});
+</script>
+{% endblock %}

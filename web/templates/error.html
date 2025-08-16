@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}오류 {{ error_code }} - AI Medical A2A{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto text-center">
+        <div class="card">
+            <div class="card-body py-5">
+                <i class="fas fa-exclamation-triangle fa-5x mb-4" style="color: var(--warning-color);"></i>
+                
+                <h1 class="display-4" style="color: var(--error-color);">{{ error_code }}</h1>
+                
+                <h2 class="mb-3">
+                    {% if error_code == 404 %}
+                        페이지를 찾을 수 없습니다
+                    {% elif error_code == 500 %}
+                        내부 서버 오류
+                    {% else %}
+                        오류가 발생했습니다
+                    {% endif %}
+                </h2>
+                
+                <p class="lead mb-4" style="color: var(--text-muted);">{{ error_message }}</p>
+                
+                {% if error_code == 404 %}
+                <p>요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.</p>
+                {% elif error_code == 500 %}
+                <p>서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-home"></i> 홈으로 돌아가기
+                    </a>
+                    
+                    <a href="{{ url_for('consultation') }}" class="btn btn-outline-primary btn-lg" style="border-color: var(--accent-blue); color: var(--accent-blue);">
+                        <i class="fas fa-comments"></i> 의료 상담
+                    </a>
+                </div>
+                
+                <div class="mt-4">
+                    <button onclick="history.back()" class="btn btn-outline-secondary" style="border-color: var(--border-color); color: var(--text-muted);">
+                        <i class="fas fa-arrow-left"></i> 이전 페이지로
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 도움말 -->
+<div class="row mt-5">
+    <div class="col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-question-circle"></i> 도움이 필요하세요?</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-home fa-3x mb-3" style="color: var(--accent-blue);"></i>
+                            <h5>홈페이지</h5>
+                            <p class="text-muted">시스템 소개와 주요 기능을 확인하세요.</p>
+                            <a href="{{ url_for('index') }}" class="btn btn-outline-primary" style="border-color: var(--accent-blue); color: var(--accent-blue);">
+                                홈으로 가기
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-heartbeat fa-3x mb-3" style="color: var(--success-color);"></i>
+                            <h5>시스템 상태</h5>
+                            <p class="text-muted">모든 AI 에이전트의 상태를 확인하세요.</p>
+                            <a href="{{ url_for('health_check') }}" class="btn btn-outline-success" style="border-color: var(--success-color); color: var(--success-color);">
+                                상태 확인
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <i class="fas fa-info-circle fa-3x mb-3" style="color: #17a2b8;"></i>
+                            <h5>시스템 정보</h5>
+                            <p class="text-muted">기술적 세부사항과 사용법을 확인하세요.</p>
+                            <a href="{{ url_for('about') }}" class="btn btn-outline-info" style="border-color: #17a2b8; color: #17a2b8;">
+                                정보 보기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 오류 페이지 애니메이션
+    const errorIcon = document.querySelector('.fa-exclamation-triangle');
+    const errorCode = document.querySelector('.display-4');
+    const errorMessage = document.querySelector('h2');
+    
+    // 초기 상태 설정
+    errorIcon.style.opacity = '0';
+    errorIcon.style.transform = 'scale(0.5)';
+    errorCode.style.opacity = '0';
+    errorCode.style.transform = 'translateY(20px)';
+    errorMessage.style.opacity = '0';
+    errorMessage.style.transform = 'translateY(20px)';
+    
+    // 애니메이션 실행
+    setTimeout(() => {
+        errorIcon.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        errorIcon.style.opacity = '1';
+        errorIcon.style.transform = 'scale(1)';
+    }, 200);
+    
+    setTimeout(() => {
+        errorCode.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        errorCode.style.opacity = '1';
+        errorCode.style.transform = 'translateY(0)';
+    }, 400);
+    
+    setTimeout(() => {
+        errorMessage.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        errorMessage.style.opacity = '1';
+        errorMessage.style.transform = 'translateY(0)';
+    }, 600);
+});
+</script>
+{% endblock %}

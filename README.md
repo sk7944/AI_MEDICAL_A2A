@@ -1,29 +1,97 @@
-# AI Medical A2A (Agent-to-Agent) Consultation System
+# AI Medical A2A Consultation System
 
-인공지능 기반 의료 상담 에이전트 간 협진 시스템 - 방광암과 전립선암 전문 AI 에이전트가 협력하여 포괄적인 의료 정보를 제공합니다.
+AI 기반 의료 상담 시스템 - DR_BLADDER와 DR_PROSTATE 전문 에이전트가 협력하여 종합적인 의료 상담을 제공합니다.
+
+## 🏗️ 시스템 아키텍처
+
+```
+┌─────────────────┐    ┌─────────────────┐
+│   Flask Web     │    │  DR_BLADDER     │
+│   Interface     │    │   API :8001     │
+│   :5000         │    └─────────────────┘
+└─────────────────┘              │
+          │                      │
+          ▼                      ▼
+┌─────────────────┐    ┌─────────────────┐
+│  Orchestrator   │◄──►│  DR_PROSTATE    │
+│   API :8003     │    │   API :8002     │
+└─────────────────┘    └─────────────────┘
+```
 
 ## 📋 프로젝트 개요
 
-이 프로젝트는 EAU (European Association of Urology) 가이드라인을 기반으로 한 두 개의 전문 AI 의료 상담 에이전트를 제공합니다:
-- **DR_BLADDER**: 방광암 전문 AI 에이전트
+EAU (European Association of Urology) 가이드라인을 기반으로 한 전문 AI 의료 상담 시스템:
+- **DR_BLADDER**: 방광암 전문 AI 에이전트  
 - **DR_PROSTATE**: 전립선암 전문 AI 에이전트
+- **Orchestrator**: 두 에이전트의 의견을 종합하는 조율 시스템
 
-각 에이전트는 최신 의료 가이드라인 PDF를 RAG (Retrieval-Augmented Generation) 방식으로 학습하여, 사용자의 질문에 대해 근거 기반의 정확한 답변을 제공합니다.
+각 에이전트는 최신 의료 가이드라인을 RAG (Retrieval-Augmented Generation) 방식으로 학습하여 근거 기반 답변을 제공합니다.
 
-## 🚀 주요 기능
+## 🚀 빠른 시작
 
-### 핵심 기능
-- **전문 AI 에이전트**: 방광암과 전립선암 각각에 특화된 독립적인 AI 에이전트
-- **RAG 기반 답변 생성**: ChromaDB 벡터 데이터베이스를 통한 가이드라인 기반 답변
-- **REST API 인터페이스**: FastAPI를 통한 표준화된 API 제공
-- **n8n 워크플로우 통합**: 에이전트 간 자동화된 협진 지원 (개발 예정)
-- **다국어 지원**: 한국어와 영어 질문/답변 모두 지원
+### 1. 시스템 시작
+```bash
+./start_servers.sh
+```
 
-### 기술적 특징
-- **Ollama + Gemma3:4b 모델**: 로컬 환경에서 실행되는 경량 LLM
-- **ChromaDB + LangChain**: 효율적인 문서 검색 및 컨텍스트 관리
-- **GPU 가속 지원**: NVIDIA GPU 자동 감지 및 활용
-- **마이크로서비스 아키텍처**: 독립적으로 배포 가능한 API 서비스
+### 2. 웹 인터페이스 접속
+브라우저에서 [http://localhost:5000](http://localhost:5000) 접속
+
+### 3. 의료 상담 시작
+- 상담 페이지에서 질문 입력
+- DR_BLADDER와 DR_PROSTATE가 병렬로 분석
+- 종합 의견과 개별 전문가 의견 확인
+
+## 📋 관리 명령어
+
+### 서버 관리
+```bash
+./start_servers.sh    # 전체 시스템 시작
+./stop_servers.sh     # 전체 시스템 중지  
+./restart_servers.sh  # 전체 시스템 재시작
+./status_servers.sh   # 시스템 상태 확인
+```
+
+### 독립 CLI 도구
+```bash
+# DR_BLADDER CLI
+cd python && ./dr-bladder.sh query "BCG 치료 부작용은?"
+
+# DR_PROSTATE CLI
+cd python && ./dr-prostate.sh query "PSA 수치는 언제 검사하나요?"
+```
+
+## 🌐 서비스 엔드포인트
+
+### 웹 인터페이스
+- **메인 페이지**: http://localhost:5000
+- **의료 상담**: http://localhost:5000/consult
+- **시스템 상태**: http://localhost:5000/health
+- **소개**: http://localhost:5000/about
+
+### API 서비스
+- **DR_BLADDER API**: http://localhost:8001
+- **DR_PROSTATE API**: http://localhost:8002  
+- **Orchestrator API**: http://localhost:8003
+
+## 📊 로그 확인
+
+### 실시간 로그 모니터링
+```bash
+# 전체 로그
+tail -f logs/*.log
+
+# 개별 서비스 로그
+tail -f logs/bladder.log        # DR_BLADDER
+tail -f logs/prostate.log       # DR_PROSTATE  
+tail -f logs/orchestrator.log   # Orchestrator
+tail -f logs/web.log           # Flask Web
+```
+
+### Flask 웹 서버 상세 로그
+```bash
+tail -f web/flask_app.log
+```
 
 ## 📦 시스템 요구사항
 

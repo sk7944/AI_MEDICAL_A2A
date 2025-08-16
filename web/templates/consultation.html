@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block title %}의료 상담 - AI Medical A2A{% endblock %}
+
+{% block extra_head %}
+<style>
+    .consultation-progress {
+        display: none;
+        margin-top: 30px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid var(--border-color);
+    }
+    
+    .progress-step {
+        margin: 16px 0;
+        padding: 20px;
+        border-left: 4px solid var(--accent-blue);
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .progress-step.active {
+        border-left-color: var(--success-color);
+        background: rgba(76, 175, 80, 0.1);
+        animation: pulse 2s infinite;
+    }
+    
+    .progress-step.error {
+        border-left-color: var(--error-color);
+        background: rgba(244, 67, 54, 0.1);
+    }
+    
+    .agent-status {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .agent-status.waiting { 
+        background-color: #6c757d;
+        animation: none;
+    }
+    .agent-status.processing { 
+        background-color: var(--warning-color);
+        animation: pulse 1.5s infinite;
+        box-shadow: 0 0 12px var(--warning-color);
+    }
+    .agent-status.completed { 
+        background-color: var(--success-color);
+        box-shadow: 0 0 12px var(--success-color);
+    }
+    .agent-status.error { 
+        background-color: var(--error-color);
+        box-shadow: 0 0 12px var(--error-color);
+    }
+    
+    .agent-reasoning-container {
+        margin-top: 16px;
+        padding: 0;
+    }
+    
+    .reasoning-toggle {
+        background: rgba(57, 73, 171, 0.2);
+        border: 1px solid var(--accent-blue);
+        color: var(--text-light);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-left: 28px;
+    }
+    
+    .reasoning-toggle:hover {
+        background: rgba(57, 73, 171, 0.4);
+        transform: translateY(-1px);
+    }
+    
+    .agent-reasoning {
+        background: rgba(26, 35, 126, 0.1);
+        border: 1px solid var(--accent-blue);
+        border-radius: 8px;
+        padding: 16px;
+        margin: 12px 0 0 28px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        max-height: 250px;
+        overflow-y: auto;
+        display: none;
+        position: relative;
+    }
+    
+    .agent-reasoning.show {
+        display: block;
+        animation: slideDown 0.4s ease;
+    }
+    
+    .reasoning-line {
+        margin: 6px 0;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
+        border-left: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .reasoning-line.thinking {
+        border-left-color: var(--warning-color);
+        animation: typewriter 0.5s ease;
+        background: rgba(255, 152, 0, 0.1);
+    }
+    
+    .reasoning-line.analyzing {
+        border-left-color: var(--accent-blue);
+        background: rgba(57, 73, 171, 0.1);
+    }
+    
+    .reasoning-line.completed {
+        border-left-color: var(--success-color);
+        background: rgba(76, 175, 80, 0.1);
+    }
+    
+    .reasoning-timestamp {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        opacity: 0.7;
+    }
+    
+    .thinking-indicator {
+        display: inline-block;
+        margin-left: 8px;
+    }
+    
+    .thinking-dots::after {
+        content: '.';
+        animation: dots 1.5s steps(3, end) infinite;
+    }
+    
+    @keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
+    }
+    
+    @keyframes typewriter {
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h1 class="text-center mb-4">
+            <i class="fas fa-comments text-primary"></i> 의료 상담
+        </h1>
+        
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="question-form">
+            <form id="consultationForm" method="POST" action="{{ url_for('consultation') }}">
+                <div class="mb-3">
+                    <label for="question" class="form-label">
+                        <i class="fas fa-question-circle"></i> 질문을 입력해주세요
+                    </label>
+                    <textarea 
+                        class="form-control" 
+                        id="question" 
+                        name="question" 
+                        rows="5" 
+                        placeholder="예: 소변에 피가 보이고 자주 소변을 봅니다. 어떤 검사를 받아야 하나요?"
+                        required></textarea>
+                    <div class="form-text">
+                        방광 및 전립선 관련 질문을 자세히 입력해주세요. 
+                        두 전문 AI 에이전트가 협력하여 답변을 제공합니다.
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> 상담 요청
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 진행 상황 표시 -->
+        <div id="consultationProgress" class="consultation-progress">
+            <h3><i class="fas fa-tasks"></i> 상담 진행 상황</h3>
+            
+            <div id="progressSteps">
+                <div class="progress-step" id="step-start">
+                    <span class="agent-status waiting" id="status-start"></span>
+                    <strong>상담 시작</strong> - 질문을 접수했습니다
+                </div>
+                
+                <div class="progress-step" id="step-bladder">
+                    <span class="agent-status waiting" id="status-bladder"></span>
+                    <strong>DR_BLADDER</strong> - 방광 전문가가 분석 중입니다
+                    <div class="agent-reasoning-container">
+                        <button class="reasoning-toggle" onclick="toggleReasoning('bladder')" id="toggle-bladder" style="display: none;">
+                            <i class="fas fa-brain"></i> 추론 과정 보기
+                        </button>
+                        <div class="agent-reasoning" id="reasoning-bladder"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-step" id="step-prostate">
+                    <span class="agent-status waiting" id="status-prostate"></span>
+                    <strong>DR_PROSTATE</strong> - 전립선 전문가가 분석 중입니다
+                    <div class="agent-reasoning-container">
+                        <button class="reasoning-toggle" onclick="toggleReasoning('prostate')" id="toggle-prostate" style="display: none;">
+                            <i class="fas fa-brain"></i> 추론 과정 보기
+                        </button>
+                        <div class="agent-reasoning" id="reasoning-prostate"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-step" id="step-synthesis">
+                    <span class="agent-status waiting" id="status-synthesis"></span>
+                    <strong>의견 종합</strong> - 전문가 의견을 통합하고 있습니다
+                </div>
+                
+                <div class="progress-step" id="step-complete">
+                    <span class="agent-status waiting" id="status-complete"></span>
+                    <strong>상담 완료</strong> - 종합 결과를 준비했습니다
+                </div>
+            </div>
+        </div>
+        
+        <!-- 로딩 스피너 -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">상담 중...</span>
+            </div>
+            <p class="mt-2">전문 AI 에이전트들이 상담을 진행하고 있습니다...</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-info" role="alert">
+            <h5><i class="fas fa-info-circle"></i> 상담 진행 과정</h5>
+            <ol>
+                <li><strong>질문 접수:</strong> 입력하신 질문을 오케스트레이터가 접수합니다</li>
+                <li><strong>전문가 분석:</strong> DR_BLADDER와 DR_PROSTATE가 동시에 질문을 분석합니다</li>
+                <li><strong>의견 종합:</strong> 두 전문가의 의견을 통합하여 종합적인 답변을 생성합니다</li>
+                <li><strong>결과 제공:</strong> 각 전문가의 개별 의견과 종합 의견을 함께 제공합니다</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <h5><i class="fas fa-exclamation-triangle"></i> 의학적 면책조항</h5>
+            <p class="mb-0">
+                이 AI 상담 결과는 참고용 정보입니다. 실제 의료 진단이나 치료가 필요한 경우 
+                반드시 전문 의료진과 상담하시기 바랍니다.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('consultationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const progressDiv = document.getElementById('consultationProgress');
+    
+    // AJAX를 사용한 비동기 상담 요청
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const question = document.getElementById('question').value.trim();
+        if (!question) {
+            alert('질문을 입력해주세요.');
+            return;
+        }
+        
+        // UI 상태 변경
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 상담 요청 중...';
+        loadingSpinner.style.display = 'block';
+        progressDiv.style.display = 'block';
+        
+        // 진행 상황 시뮬레이션
+        simulateProgress();
+        
+        // AJAX 요청
+        fetch('/api/consult', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question: question })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('🔥 API 응답 데이터:', data);
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // POST 방식으로 결과 페이지에 데이터 전달
+            const resultForm = document.createElement('form');
+            resultForm.method = 'POST';
+            resultForm.action = '/result';
+            
+            const resultInput = document.createElement('input');
+            resultInput.type = 'hidden';
+            resultInput.name = 'consultation_result';
+            resultInput.value = JSON.stringify(data);
+            resultForm.appendChild(resultInput);
+            
+            document.body.appendChild(resultForm);
+            resultForm.submit();
+        })
+        .catch(error => {
+            console.error('상담 요청 실패:', error);
+            alert('상담 요청 중 오류가 발생했습니다: ' + error.message);
+            
+            // UI 복원
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 상담 요청';
+            loadingSpinner.style.display = 'none';
+            progressDiv.style.display = 'none';
+        });
+    });
+    
+    function simulateProgress() {
+        const steps = [
+            { id: 'start', delay: 500 },
+            { id: 'bladder', delay: 2000 },
+            { id: 'prostate', delay: 2500 },
+            { id: 'synthesis', delay: 6000 },
+            { id: 'complete', delay: 8000 }
+        ];
+        
+        steps.forEach(step => {
+            setTimeout(() => {
+                updateProgressStep(step.id, 'processing');
+                
+                // 에이전트별 추론 과정 시뮬레이션
+                if (step.id === 'bladder') {
+                    simulateAgentReasoning('bladder');
+                } else if (step.id === 'prostate') {
+                    simulateAgentReasoning('prostate');
+                }
+                
+                const completionDelay = (step.id === 'bladder' || step.id === 'prostate') ? 3500 : 1000;
+                setTimeout(() => {
+                    updateProgressStep(step.id, 'completed');
+                }, completionDelay);
+            }, step.delay);
+        });
+    }
+    
+    function updateProgressStep(stepId, status) {
+        const stepDiv = document.getElementById(`step-${stepId}`);
+        const statusIcon = document.getElementById(`status-${stepId}`);
+        
+        // 상태 아이콘 업데이트
+        statusIcon.className = `agent-status ${status}`;
+        
+        // 단계 스타일 업데이트
+        if (status === 'completed') {
+            stepDiv.classList.add('active');
+        } else if (status === 'error') {
+            stepDiv.classList.add('error');
+        }
+        
+        // 추론 과정 버튼 표시/숨김
+        const toggleBtn = document.getElementById(`toggle-${stepId}`);
+        if (toggleBtn && (stepId === 'bladder' || stepId === 'prostate')) {
+            if (status === 'processing') {
+                toggleBtn.style.display = 'inline-block';
+            }
+        }
+    }
+    // 추론 과정 토글 함수
+    window.toggleReasoning = function(agentType) {
+        const reasoningDiv = document.getElementById(`reasoning-${agentType}`);
+        const toggleBtn = document.getElementById(`toggle-${agentType}`);
+        
+        if (reasoningDiv.classList.contains('show')) {
+            reasoningDiv.classList.remove('show');
+            toggleBtn.innerHTML = '<i class="fas fa-brain"></i> 추론 과정 보기';
+        } else {
+            reasoningDiv.classList.add('show');
+            toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> 추론 과정 숨김';
+        }
+    };
+    
+    // 에이전트 추론 과정 시뮬레이션
+    function simulateAgentReasoning(agentType) {
+        const reasoningDiv = document.getElementById(`reasoning-${agentType}`);
+        
+        let reasoningSteps = [];
+        
+        if (agentType === 'bladder') {
+            reasoningSteps = [
+                { text: '환자 증상 분석 시작...', type: 'thinking', delay: 500 },
+                { text: 'EAU 방광암 가이드라인 검색 중', type: 'analyzing', delay: 1000 },
+                { text: '증상과 진단 기준 비교 분석', type: 'analyzing', delay: 1500 },
+                { text: '참고 문헌 및 연관 지식 검색', type: 'thinking', delay: 2000 },
+                { text: '위험 요인 평가 및 분류', type: 'analyzing', delay: 2500 },
+                { text: '치료 옵션 및 권고사항 정리', type: 'thinking', delay: 3000 },
+                { text: '최종 의견 종합 완료', type: 'completed', delay: 3500 }
+            ];
+        } else if (agentType === 'prostate') {
+            reasoningSteps = [
+                { text: '전립선 관련 증상 분석 시작...', type: 'thinking', delay: 500 },
+                { text: 'EAU 전립선암 가이드라인 참조', type: 'analyzing', delay: 1000 },
+                { text: 'PSA 수치 및 위험 인자 평가', type: 'analyzing', delay: 1500 },
+                { text: '연령별 스크리닝 기준 검토', type: 'thinking', delay: 2000 },
+                { text: '진단 및 병기 결정 분석', type: 'analyzing', delay: 2500 },
+                { text: '치료 옵션 및 예후 평가', type: 'thinking', delay: 3000 },
+                { text: '전문가 의견 정리 완료', type: 'completed', delay: 3500 }
+            ];
+        }
+        
+        reasoningSteps.forEach(step => {
+            setTimeout(() => {
+                addReasoningLine(agentType, step.text, step.type);
+            }, step.delay);
+        });
+    }
+    
+    function addReasoningLine(agentType, text, type) {
+        const reasoningDiv = document.getElementById(`reasoning-${agentType}`);
+        const timestamp = new Date().toLocaleTimeString('ko-KR', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        });
+        
+        const line = document.createElement('div');
+        line.className = `reasoning-line ${type}`;
+        
+        let icon = '';
+        switch(type) {
+            case 'thinking':
+                icon = '<i class="fas fa-lightbulb"></i>';
+                break;
+            case 'analyzing':
+                icon = '<i class="fas fa-search"></i>';
+                break;
+            case 'completed':
+                icon = '<i class="fas fa-check-circle"></i>';
+                break;
+        }
+        
+        line.innerHTML = `
+            <span class="reasoning-timestamp">[${timestamp}]</span> 
+            ${icon} ${text}
+            ${type === 'thinking' ? '<span class="thinking-indicator"><span class="thinking-dots"></span></span>' : ''}
+        `;
+        
+        reasoningDiv.appendChild(line);
+        reasoningDiv.scrollTop = reasoningDiv.scrollHeight;
+    }
+    
+});
+
+// 결과 페이지 처리를 위한 라우트 추가 필요
+</script>
+{% endblock %}
