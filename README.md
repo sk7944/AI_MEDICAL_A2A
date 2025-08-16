@@ -1,337 +1,223 @@
-# DR-Bladder-CLI - Bladder Cancer EAU Guidelines AI Agent
+# AI Medical A2A (Agent-to-Agent) Consultation System
 
-This project is an independent CLI AI Agent based on bladder cancer EAU (European Association of Urology) guidelines. It utilizes Ollama + Qwen2.5-1.5B model to provide AI-generated answers by searching relevant information from the latest guideline PDF documents when users ask questions about bladder cancer in natural language. The system now supports both Korean and English input/output with improved encoding handling.
+인공지능 기반 의료 상담 에이전트 간 협진 시스템 - 방광암과 전립선암 전문 AI 에이전트가 협력하여 포괄적인 의료 정보를 제공합니다.
 
-## Key Features
+## 📋 프로젝트 개요
 
-- **AI-powered Answer Generation**: Intelligent answer generation through Ollama + Qwen2.5-1.5B model
-- **Latest Medical Information**: Direct information retrieval from 2025 EAU Bladder Cancer Guidelines PDF
-- **Natural Language Q&A**: Handles natural questions like "What are the side effects of BCG treatment?"
-- **Multi-language Support**: Accepts questions in Korean or English, responds in the same language
-- **Cross-platform UTF-8 Support**: Unified UTF-8 encoding handling for all operating systems
-- **GPU Acceleration**: Automatically utilizes NVIDIA GPU when available
-- **Interactive Mode**: Chat interface enabling continuous questions and answers
-- **Windows Compatibility**: Improved Windows support with memory-based vector storage
-- **Easy Installation**: One-click installation system with progress tracking for immediate use without complex setup
+이 프로젝트는 EAU (European Association of Urology) 가이드라인을 기반으로 한 두 개의 전문 AI 의료 상담 에이전트를 제공합니다:
+- **DR_BLADDER**: 방광암 전문 AI 에이전트
+- **DR_PROSTATE**: 전립선암 전문 AI 에이전트
 
-## System Requirements
+각 에이전트는 최신 의료 가이드라인 PDF를 RAG (Retrieval-Augmented Generation) 방식으로 학습하여, 사용자의 질문에 대해 근거 기반의 정확한 답변을 제공합니다.
 
-- **Operating System**: Windows, macOS, Linux
-- **Node.js**: 14.0 or higher
-- **Python**: 3.8 or higher  
-- **Memory**: 4GB or more recommended
-- **Disk Space**: 3GB or more free space (for Qwen2.5-1.5B model)
-- **Ollama**: Required for AI model execution
-- **GPU (Optional)**:
-  - NVIDIA GPU (CUDA support)
-  - 4GB VRAM or more recommended
+## 🚀 주요 기능
 
-## Quick Installation
+### 핵심 기능
+- **전문 AI 에이전트**: 방광암과 전립선암 각각에 특화된 독립적인 AI 에이전트
+- **RAG 기반 답변 생성**: ChromaDB 벡터 데이터베이스를 통한 가이드라인 기반 답변
+- **REST API 인터페이스**: FastAPI를 통한 표준화된 API 제공
+- **n8n 워크플로우 통합**: 에이전트 간 자동화된 협진 지원 (개발 예정)
+- **다국어 지원**: 한국어와 영어 질문/답변 모두 지원
 
-### Step 1: Clone Repository
+### 기술적 특징
+- **Ollama + Gemma3:4b 모델**: 로컬 환경에서 실행되는 경량 LLM
+- **ChromaDB + LangChain**: 효율적인 문서 검색 및 컨텍스트 관리
+- **GPU 가속 지원**: NVIDIA GPU 자동 감지 및 활용
+- **마이크로서비스 아키텍처**: 독립적으로 배포 가능한 API 서비스
+
+## 📦 시스템 요구사항
+
+- **운영체제**: Linux, macOS, Windows
+- **Python**: 3.8 이상
+- **메모리**: 8GB 이상 권장
+- **디스크 공간**: 10GB 이상 여유 공간
+- **Ollama**: 필수 (AI 모델 실행용)
+- **GPU (선택사항)**: 
+  - NVIDIA GPU (CUDA 지원)
+  - 4GB VRAM 이상 권장
+
+## 🛠️ 설치 방법
+
+### 1단계: 저장소 클론
 ```bash
-git clone https://github.com/sk7944/DR_BLADDER_CLI.git
-cd DR_BLADDER_CLI
+git clone https://github.com/sk7944/AI_MEDICAL_A2A.git
+cd AI_MEDICAL_A2A
 ```
 
-### Step 2: Automatic Installation
+### 2단계: Python 가상환경 설정
 ```bash
-npm install  # Automatically installs Node.js dependencies and Python packages
+python -m venv env
+source env/bin/activate  # Linux/macOS
+# 또는
+env\Scripts\activate  # Windows
 ```
 
-### Step 3: Install Ollama
+### 3단계: 의존성 설치
 ```bash
-# Linux/macOS
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Windows
-# Download installer from https://ollama.ai/download
+pip install fastapi uvicorn ollama langchain chromadb sentence-transformers pypdf2
 ```
 
-### Step 4: Global Installation (Optional)
+### 4단계: Ollama 설치 및 모델 다운로드
 ```bash
-# Method 1: Global installation (use dr-bladder command directly)
-npm install -g .
+# Ollama 설치
+curl -fsSL https://ollama.ai/install.sh | sh  # Linux/macOS
+# Windows는 https://ollama.ai/download 에서 설치
 
-# Method 2: Use npx (without global installation)
-# Use with npx dr-bladder command
+# Gemma3:4b 모델 다운로드
+ollama pull gemma3:4b
 ```
 
-### Step 5: Initialize
+### 5단계: 벡터 데이터베이스 구축
 ```bash
-# If globally installed
-dr-bladder init
-
-# If using npx
-npx dr-bladder init
+python agents/shared/setup_vector_db.py
 ```
 
-## Usage
+## 🎯 사용 방법
 
-### CLI Commands
+### API 서버 실행
 
-**Linux/macOS (if globally installed):**
+**DR_BLADDER 에이전트 실행 (포트 8001):**
 ```bash
-# Single question
-dr-bladder query "What are the side effects of BCG treatment?"
-
-# Interactive mode (recommended)
-dr-bladder chat
-
-# Check system status
-dr-bladder status
-
-# Edit configuration
-dr-bladder config
-
-# Help
-dr-bladder --help
+cd agents/bladder
+./run_bladder.sh
+# 또는
+python main_bladder.py
 ```
 
-**Windows (recommended to use npx):**
+**DR_PROSTATE 에이전트 실행 (포트 8002):**
 ```bash
-# Single question
-npx dr-bladder query "What are the side effects of BCG treatment?"
-
-# Interactive mode (recommended)
-npx dr-bladder chat
-
-# Check system status
-npx dr-bladder status
-
-# Edit configuration
-npx dr-bladder config
-
-# Help
-npx dr-bladder --help
+cd agents/prostate
+./run_prostate.sh
+# 또는
+python main_prostate.py
 ```
 
-### Example Questions
+### API 엔드포인트
 
-**Korean Input (responds in Korean):**
-- "BCG 치료의 부작용은 무엇인가요?" → Korean response about BCG side effects
-- "방광암의 재발 위험 요인에 대해 알려주세요" → Korean response about recurrence risk factors
-- "TURBT 수술 후 관리 방법은?" → Korean response about post-TURBT management
-- "방광암 병기 분류에 대해 설명해주세요" → Korean response about staging classification
+각 에이전트는 다음 엔드포인트를 제공합니다:
 
-**English Input (responds in English):**
+#### 건강 상태 확인
+```bash
+curl http://localhost:8001/health  # DR_BLADDER
+curl http://localhost:8002/health  # DR_PROSTATE
+```
+
+#### 질문하기
+```bash
+# DR_BLADDER에게 질문
+curl -X POST http://localhost:8001/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "BCG 치료의 부작용은 무엇인가요?"}'
+
+# DR_PROSTATE에게 질문
+curl -X POST http://localhost:8002/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "PSA 검사에 대해 설명해주세요"}'
+```
+
+### 예제 질문들
+
+**방광암 관련 (DR_BLADDER):**
+- "BCG 치료의 부작용은 무엇인가요?"
+- "방광암의 재발 위험 요인에 대해 알려주세요"
+- "TURBT 수술 후 관리 방법은?"
 - "What are the indications for BCG therapy?"
-- "How is NMIBC risk stratification performed?"
-- "What are the surveillance protocols for bladder cancer?"
 
-### Interactive Mode Usage
+**전립선암 관련 (DR_PROSTATE):**
+- "PSA 검사의 정상 수치는?"
+- "전립선암의 글리슨 점수에 대해 설명해주세요"
+- "전립선 생검은 언제 필요한가요?"
+- "What are the treatment options for localized prostate cancer?"
 
-**Linux/macOS:**
-```bash
-$ dr-bladder chat
-```
-
-**Windows:**
-```bash
-$ npx dr-bladder chat
-```
-
-**Example Session:**
-```
-DR-Bladder-CLI - Bladder Cancer EAU Guidelines AI Agent
-Interactive mode started (Exit: 'quit', 'exit', 'q')
-
-Question: What are the side effects of BCG?
-Generating answer...
-
-Answer:
-The main side effects of BCG therapy include:
-1. Local side effects: Burning sensation during urination, frequent urination, hematuria
-2. Systemic side effects: Fever, fatigue, flu-like symptoms
-3. Serious side effects: BCG sepsis (rare but requires attention)
-...
-
-Question: 
-```
-
-## Project Structure
+## 📁 프로젝트 구조
 
 ```
-DR_BLADDER_CLI/
-├── bin/
-│   └── dr-bladder.js          # CLI entry point
-├── python/
-│   ├── cli.py                 # Python CLI main
-│   ├── bladder_agent.py       # Core AI agent with vector storage
-│   ├── config.py              # Configuration management
-│   ├── utils.py               # Utility functions
-│   ├── requirements.txt       # Python dependencies
-│   └── files/                 # PDF file storage
-│       └── EAU-Guidelines-*.pdf
-├── src/
-│   ├── install.js             # Automatic installation system
-│   ├── init.js                # System initialization
-│   └── test.js                # Comprehensive test system
-├── files/
-│   └── EAU-Guidelines-*.pdf   # Original PDF files
-├── env/                       # Python virtual environment (conda)
-├── package.json               # Node.js configuration
+AI_MEDICAL_A2A/
+├── agents/
+│   ├── bladder/              # DR_BLADDER API
+│   │   ├── bladder_logic.py  # 핵심 로직
+│   │   ├── main_bladder.py   # FastAPI 서버
+│   │   └── run_bladder.sh    # 실행 스크립트
+│   ├── prostate/             # DR_PROSTATE API  
+│   │   ├── prostate_logic.py # 핵심 로직
+│   │   ├── main_prostate.py  # FastAPI 서버
+│   │   └── run_prostate.sh   # 실행 스크립트
+│   └── shared/               # 공유 모듈
+│       ├── vector_db.py      # 벡터 DB 관리
+│       └── setup_vector_db.py # DB 초기화 스크립트
+├── files/                    # 의료 가이드라인 PDF
+│   ├── EAU-Guidelines-on-Non-muscle-invasive-Bladder-Cancer-2025.pdf
+│   └── EAU-EANM-ESTRO-ESUR-ISUP-SIOG-Guidelines-on-Prostate-Cancer-2025_updated.pdf
+├── chroma_db/               # ChromaDB 벡터 데이터베이스
+├── n8n/workflows/           # n8n 워크플로우 (개발 예정)
+├── tests/                   # 테스트 코드
 └── README.md
 ```
 
-## Core Components
+## 🔧 기술 스택
 
-| File | Description |
-|---|---|
-| `bin/dr-bladder.js` | **CLI Entry Point** - Starting point for all commands |
-| `python/cli.py` | **Python CLI Main** - Handles actual AI functionality |
-| `python/bladder_agent.py` | **AI Agent Core** - RAG + Ollama integration with vector storage |
-| `python/config.py` | **Configuration Management** - Manages all settings |
-| `python/utils.py` | **Utilities** - System checks, logging, etc. |
-| `src/install.js` | **Automatic Installation** - Runs automatically on npm install |
-| `src/init.js` | **System Initialization** - Ollama and model installation |
-| `src/test.js` | **Comprehensive Testing** - Full system verification |
+### 핵심 기술
+- **Ollama + Gemma3:4b**: 로컬 LLM 실행 환경
+- **FastAPI**: 고성능 REST API 프레임워크
+- **ChromaDB**: 벡터 데이터베이스
+- **LangChain**: LLM 애플리케이션 개발 프레임워크
+- **RAG**: 검색 증강 생성 기법
 
-## Technical Improvements
+### AI/ML 라이브러리
+- **Sentence Transformers**: 다국어 텍스트 임베딩
+- **PyPDF2**: PDF 문서 처리
+- **NumPy**: 벡터 연산
 
-### Recent Updates
+### 개발 도구
+- **Python 3.8+**: 백엔드 개발
+- **Uvicorn**: ASGI 서버
+- **n8n**: 워크플로우 자동화 (예정)
 
-1. **Language Detection**: Automatically detects input language (Korean/English) and responds accordingly
-2. **UTF-8 Encoding**: Unified UTF-8 encoding handling across all operating systems
-3. **Windows Compatibility**: Memory-based vector storage for improved Windows performance
-4. **Vector Storage**: Replaced ChromaDB with simple in-memory vector storage for better reliability
-5. **Encoding Safety**: Enhanced text processing with safer encoding/decoding methods
-6. **Error Handling**: Improved error messages without emoji characters
+## 🚀 향후 개발 계획
 
-### Vector Storage System
+### Phase 3: n8n 워크플로우 통합
+- [ ] n8n 워크플로우 템플릿 개발
+- [ ] 에이전트 간 자동 라우팅 로직
+- [ ] 복합 질문 처리 시스템
+- [ ] 협진 결과 통합 API
 
-The system now uses a simple in-memory vector storage instead of ChromaDB for better cross-platform compatibility:
+### 추가 개선 사항
+- [ ] 더 많은 의료 분야 에이전트 추가
+- [ ] 웹 UI 인터페이스 개발
+- [ ] Docker 컨테이너화
+- [ ] Kubernetes 배포 지원
+- [ ] 모니터링 및 로깅 시스템
 
-- **Memory-based**: All vectors stored in memory for faster access
-- **Cosine Similarity**: Direct cosine similarity calculation for document retrieval
-- **Windows-friendly**: Eliminates file system compatibility issues
-- **Efficient**: Reduced memory usage and faster processing
+## ⚠️ 면책 조항
 
-## Troubleshooting
+**중요**: 이 시스템은 **정보 제공 목적**으로만 사용되어야 하며, **실제 의료 상담을 대체할 수 없습니다**.
 
-### Installation Issues
+- 모든 의료 결정은 반드시 **자격을 갖춘 의료 전문가**와 상의해야 합니다
+- 이 시스템의 답변은 참고용이며, 진단이나 치료 권고가 아닙니다
+- 응급 상황 시에는 즉시 의료기관을 방문하거나 응급 전화를 이용하세요
 
-1. **Run System Diagnostics**
-   ```bash
-   node src/test.js  # Comprehensive system test
-   ```
+## 📄 라이선스
 
-2. **Check Status**
-   ```bash
-   # Linux/macOS
-   dr-bladder status
-   
-   # Windows
-   npx dr-bladder status
-   ```
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
 
-3. **Reinstall**
-   ```bash
-   npm install  # Reinstall dependencies
-   
-   # Linux/macOS
-   dr-bladder init
-   
-   # Windows
-   npx dr-bladder init
-   ```
+## 🤝 기여하기
 
-### Ollama Issues
+프로젝트 개선을 위한 기여를 환영합니다!
 
-1. **Check Ollama Service**
-   ```bash
-   ollama --version  # Check Ollama installation
-   ollama list       # List installed models
-   ```
+1. 저장소를 Fork 하세요
+2. 기능 브랜치를 생성하세요 (`git checkout -b feature/AmazingFeature`)
+3. 변경사항을 커밋하세요 (`git commit -m 'Add some AmazingFeature'`)
+4. 브랜치에 푸시하세요 (`git push origin feature/AmazingFeature`)
+5. Pull Request를 열어주세요
 
-2. **Manual Qwen Model Installation**
-   ```bash
-   ollama pull qwen2.5:1.5b
-   ```
+## 📞 지원 및 문의
 
-3. **Restart Ollama Service**
-   ```bash
-   # Linux/macOS
-   sudo systemctl restart ollama
-   
-   # Or run directly
-   ollama serve
-   ```
+문제가 발생하거나 질문이 있으시면:
 
-### Common Errors
-
-1. **"Python not found"**
-   - Check Python 3.8+ installation
-   - Verify PATH environment variable settings
-
-2. **"Ollama connection failed"**
-   - Check if Ollama service is running
-   - Verify port 11434 availability
-
-3. **"PDF file not found"**
-   - Check PDF file existence in `files/` directory
-   - Verify file permissions
-
-4. **Out of memory error**
-   - Adjust batch size if GPU memory is insufficient
-   - Reduce `batch_size` value in configuration file
-   - Switch to CPU usage (saves GPU memory)
-
-5. **Encoding issues (Windows)**
-   - System now automatically handles UTF-8 encoding
-   - Windows console is set to UTF-8 mode automatically
-
-## Tech Stack
-
-### Core Technologies
-- **Ollama + Qwen2.5-1.5B**: Enhanced local AI model execution with progress tracking
-- **RAG (Retrieval-Augmented Generation)**: Document-based answer generation
-- **In-memory Vector Storage**: Simple and efficient vector storage system
-- **SentenceTransformers**: Multilingual text embedding with improved encoding handling
-
-### Development Environment
-- **Python 3.8+**: AI backend
-- **Node.js 14+**: CLI interface
-- **PyTorch**: Deep learning framework (GPU/CPU)
-- **PyPDF2**: PDF document processing
-
-### Additional Libraries
-- **Colorama**: Terminal color output
-- **psutil**: System monitoring
-- **tqdm**: Progress display
-- **argparse**: CLI interface
-- **numpy**: Vector calculations
-
-## License
-
-This project is distributed under the MIT License.
-
-## Disclaimer
-
-This project is intended for **informational purposes** and **cannot replace medical advice**. 
-
-**Important**: All treatment decisions must be discussed with **qualified healthcare professionals**.
-
-## Contributing
-
-Contributions for project improvement are welcome!
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## Support
-
-If you encounter issues, please check:
-
-1. **GitHub Issues**: Bug reports and feature requests
-2. **System Test**: `node src/test.js`
-3. **Status Check**: 
-   - Linux/macOS: `dr-bladder status`
-   - Windows: `npx dr-bladder status`
+1. **GitHub Issues**: 버그 리포트 및 기능 제안
+2. **이메일**: [프로젝트 관리자에게 문의]
+3. **문서**: 프로젝트 위키 참조
 
 ---
 
-**DR-Bladder-CLI** - AI tool for better healthcare by medical professionals
+**AI Medical A2A** - AI 기술을 통한 더 나은 의료 정보 접근성을 위하여
