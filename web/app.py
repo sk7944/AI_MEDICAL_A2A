@@ -11,6 +11,8 @@ import aiohttp
 from datetime import datetime
 import logging
 import time
+import markdown
+import re
 
 # 로깅 설정
 logging.basicConfig(
@@ -272,6 +274,30 @@ def truncate_words(text, max_words=50):
     if len(words) > max_words:
         return ' '.join(words[:max_words]) + '...'
     return text
+
+@app.template_filter('markdown')
+def markdown_filter(text):
+    """마크다운을 HTML로 변환하는 필터"""
+    if not text:
+        return ''
+    
+    # 마크다운을 HTML로 변환
+    md = markdown.Markdown(
+        extensions=[
+            'tables',           # 테이블 지원
+            'fenced_code',      # 코드 블록 지원
+            'nl2br',           # 줄바꿈을 <br>로 변환
+            'sane_lists'       # 리스트 개선
+        ]
+    )
+    
+    # 이모지와 특수 문자 처리
+    text = re.sub(r'📋|🏥|⚠️|💡|🔍|📊|🎯', lambda m: f'<span class="emoji">{m.group()}</span>', text)
+    
+    # 마크다운 변환 실행
+    html_content = md.convert(text)
+    
+    return html_content
 
 if __name__ == '__main__':
     print("🚀 AI Medical A2A Consultation Web Server 시작")

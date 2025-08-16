@@ -212,7 +212,7 @@
         <i class="fas fa-brain"></i> 종합 의료 상담 결과
     </h2>
     <div class="response-content">
-        {{ consultation_result.synthesized_consultation | replace('\n', '<br>') | safe }}
+        {{ consultation_result.synthesized_consultation | markdown | safe }}
     </div>
 </div>
 {% endif %}
@@ -234,7 +234,7 @@
             
             {% if consultation_result.individual_consultations.bladder_specialist.status == 'success' %}
                 <div class="response-content">
-                    {{ consultation_result.individual_consultations.bladder_specialist.response.answer | replace('\n', '<br>') | safe }}
+                    {{ consultation_result.individual_consultations.bladder_specialist.response.answer | markdown | safe }}
                 </div>
             {% else %}
                 <div class="alert alert-danger">
@@ -265,7 +265,7 @@
             
             {% if consultation_result.individual_consultations.prostate_specialist.status == 'success' %}
                 <div class="response-content">
-                    {{ consultation_result.individual_consultations.prostate_specialist.response.answer | replace('\n', '<br>') | safe }}
+                    {{ consultation_result.individual_consultations.prostate_specialist.response.answer | markdown | safe }}
                 </div>
             {% else %}
                 <div class="alert alert-danger">

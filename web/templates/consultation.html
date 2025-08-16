@@ -238,6 +238,12 @@
                 <div class="progress-step" id="step-synthesis">
                     <span class="agent-status waiting" id="status-synthesis"></span>
                     <strong>의견 종합</strong> - 전문가 의견을 통합하고 있습니다
+                    <div class="agent-reasoning-container">
+                        <button class="reasoning-toggle" onclick="toggleReasoning('synthesis')" id="toggle-synthesis" style="display: none;">
+                            <i class="fas fa-brain"></i> 오케스트레이터 추론 과정 보기
+                        </button>
+                        <div class="agent-reasoning" id="reasoning-synthesis"></div>
+                    </div>
                 </div>
                 
                 <div class="progress-step" id="step-complete">
@@ -371,9 +377,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     simulateAgentReasoning('bladder');
                 } else if (step.id === 'prostate') {
                     simulateAgentReasoning('prostate');
+                } else if (step.id === 'synthesis') {
+                    simulateOrchestratorReasoning('synthesis');
                 }
                 
-                const completionDelay = (step.id === 'bladder' || step.id === 'prostate') ? 3500 : 1000;
+                const completionDelay = (step.id === 'bladder' || step.id === 'prostate') ? 3500 : (step.id === 'synthesis') ? 4000 : 1000;
                 setTimeout(() => {
                     updateProgressStep(step.id, 'completed');
                 }, completionDelay);
@@ -397,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 추론 과정 버튼 표시/숨김
         const toggleBtn = document.getElementById(`toggle-${stepId}`);
-        if (toggleBtn && (stepId === 'bladder' || stepId === 'prostate')) {
+        if (toggleBtn && (stepId === 'bladder' || stepId === 'prostate' || stepId === 'synthesis')) {
             if (status === 'processing') {
                 toggleBtn.style.display = 'inline-block';
             }
@@ -474,6 +482,63 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'completed':
                 icon = '<i class="fas fa-check-circle"></i>';
+                break;
+        }
+        
+        line.innerHTML = `
+            <span class="reasoning-timestamp">[${timestamp}]</span> 
+            ${icon} ${text}
+            ${type === 'thinking' ? '<span class="thinking-indicator"><span class="thinking-dots"></span></span>' : ''}
+        `;
+        
+        reasoningDiv.appendChild(line);
+        reasoningDiv.scrollTop = reasoningDiv.scrollHeight;
+    }
+    
+    // 오케스트레이터 추론 과정 시뮬레이션
+    function simulateOrchestratorReasoning(orchestratorType) {
+        const reasoningDiv = document.getElementById(`reasoning-${orchestratorType}`);
+        
+        const reasoningSteps = [
+            { text: '두 전문가 의견 수집 완료...', type: 'analyzing', delay: 500 },
+            { text: 'DR_BLADDER 의견 분석: 방광 및 비뇨기과 관점 파악', type: 'thinking', delay: 1000 },
+            { text: 'DR_PROSTATE 의견 분석: 전립선 전문 관점 파악', type: 'thinking', delay: 1500 },
+            { text: '두 의견 간 공통점 및 차이점 비교 분석', type: 'analyzing', delay: 2000 },
+            { text: '상호 보완적 정보 확인 및 중복 내용 제거', type: 'thinking', delay: 2500 },
+            { text: '환자 맥락에 맞는 종합 우선순위 결정', type: 'analyzing', delay: 3000 },
+            { text: 'EAU 가이드라인 기반 최종 권고사항 정리', type: 'thinking', delay: 3500 },
+            { text: '종합 의료 상담 결과 생성 완료', type: 'completed', delay: 4000 }
+        ];
+        
+        reasoningSteps.forEach(step => {
+            setTimeout(() => {
+                addOrchestratorReasoningLine(orchestratorType, step.text, step.type);
+            }, step.delay);
+        });
+    }
+    
+    function addOrchestratorReasoningLine(orchestratorType, text, type) {
+        const reasoningDiv = document.getElementById(`reasoning-${orchestratorType}`);
+        const timestamp = new Date().toLocaleTimeString('ko-KR', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        });
+        
+        const line = document.createElement('div');
+        line.className = `reasoning-line ${type}`;
+        
+        let icon = '';
+        switch(type) {
+            case 'thinking':
+                icon = '<i class="fas fa-brain"></i>';
+                break;
+            case 'analyzing':
+                icon = '<i class="fas fa-search-plus"></i>';
+                break;
+            case 'completed':
+                icon = '<i class="fas fa-check-double"></i>';
                 break;
         }
         
