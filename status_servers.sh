@@ -75,7 +75,7 @@ echo -e "${WHITE}🌐 포트 연결 상태:${NC}"
 check_port 8001 "DR_BLADDER API" "/health" "$BLUE"
 check_port 8002 "DR_PROSTATE API" "/health" "$PURPLE"
 check_port 8003 "Orchestrator API" "/health" "$CYAN"
-check_port 5000 "Flask 웹 서버" "/" "$WHITE"
+check_port 8000 "Flask 웹 서버" "/" "$WHITE"
 
 echo ""
 
@@ -113,7 +113,7 @@ echo ""
 all_running=true
 
 # API 서버들 확인
-for port in 8001 8002 8003 5000; do
+for port in 8001 8002 8003 8000; do
     if ! lsof -i :$port 2>/dev/null | grep -q LISTEN; then
         all_running=false
         break
@@ -123,7 +123,7 @@ done
 echo -e "${WHITE}================================================${NC}"
 if [ "$all_running" = true ]; then
     echo -e "${GREEN}🎉 시스템 상태: 모든 서버가 정상 동작 중${NC}"
-    echo -e "${WHITE}📱 웹 인터페이스: ${CYAN}http://localhost:5000${NC}"
+    echo -e "${WHITE}📱 웹 인터페이스: ${CYAN}http://localhost:8000${NC}"
 else
     echo -e "${RED}⚠️ 시스템 상태: 일부 서버에 문제가 있습니다${NC}"
     echo -e "${WHITE}🔧 문제 해결: ${YELLOW}./restart_servers.sh${NC}"

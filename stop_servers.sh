@@ -70,7 +70,7 @@ pkill -f "web.*app.py" 2>/dev/null || true
 
 # 포트 사용 확인
 echo -e "${WHITE}🔍 포트 사용 상태 확인...${NC}"
-for port in 5000 8001 8002 8003; do
+for port in 8000 8001 8002 8003; do
     if lsof -i :$port 2>/dev/null | grep -q LISTEN; then
         echo -e "${RED}❌ 포트 $port: 여전히 사용 중${NC}"
     else

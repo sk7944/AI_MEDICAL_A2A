@@ -97,8 +97,8 @@ echo -e "${GREEN}✅ Orchestrator 서버 시작됨 (PID: $ORCHESTRATOR_PID)${NC}
 # 서버 준비 대기
 sleep 5
 
-# 4. Flask 웹 서버 시작 (포트 5000)
-echo -e "${WHITE}🌐 Flask 웹 서버 시작 중... (포트 5000)${NC}"
+# 4. Flask 웹 서버 시작 (포트 8000)
+echo -e "${WHITE}🌐 Flask 웹 서버 시작 중... (포트 8000)${NC}"
 cd web
 nohup ../env/bin/python app.py > ../logs/web.log 2>&1 &
 WEB_PID=$!
@@ -132,10 +132,10 @@ check_port 8002 "DR_PROSTATE API" "$PURPLE"
 check_port 8003 "Orchestrator API" "$CYAN"
 
 # Flask 웹 서버는 다른 방식으로 확인
-if curl -s http://localhost:5000 > /dev/null 2>&1; then
-    echo -e "${WHITE}✅ Flask 웹 서버 (포트 5000): 정상 동작${NC}"
+if curl -s http://localhost:8000 > /dev/null 2>&1; then
+    echo -e "${WHITE}✅ Flask 웹 서버 (포트 8000): 정상 동작${NC}"
 else
-    echo -e "${RED}❌ Flask 웹 서버 (포트 5000): 연결 실패${NC}"
+    echo -e "${RED}❌ Flask 웹 서버 (포트 8000): 연결 실패${NC}"
 fi
 
 echo -e "${WHITE}================================================${NC}"
@@ -143,10 +143,10 @@ echo -e "${GREEN}🎉 AI Medical A2A 시스템이 성공적으로 시작되었�
 echo -e "${WHITE}================================================${NC}"
 
 echo -e "${WHITE}📱 접속 URL:${NC}"
-echo -e "   🏠 메인 페이지: ${CYAN}http://localhost:5000${NC}"
-echo -e "   💬 의료 상담: ${CYAN}http://localhost:5000/consult${NC}"
-echo -e "   🏥 시스템 상태: ${CYAN}http://localhost:5000/health${NC}"
-echo -e "   📋 소개: ${CYAN}http://localhost:5000/about${NC}"
+echo -e "   🏠 메인 페이지: ${CYAN}http://localhost:8000${NC}"
+echo -e "   💬 의료 상담: ${CYAN}http://localhost:8000/consult${NC}"
+echo -e "   🏥 시스템 상태: ${CYAN}http://localhost:8000/health${NC}"
+echo -e "   📋 소개: ${CYAN}http://localhost:8000/about${NC}"
 
 echo -e "${WHITE}🔧 API 엔드포인트:${NC}"
 echo -e "   ${BLUE}DR_BLADDER API: http://localhost:8001${NC}"
@@ -159,4 +159,4 @@ echo -e "   서버 중지: ${YELLOW}./stop_servers.sh${NC}"
 echo -e "   서버 재시작: ${YELLOW}./restart_servers.sh${NC}"
 
 echo -e "${WHITE}================================================${NC}"
-echo -e "${GREEN}시스템이 준비되었습니다. 브라우저에서 http://localhost:5000 에 접속하세요!${NC}"
+echo -e "${GREEN}시스템이 준비되었습니다. 브라우저에서 http://localhost:8000 에 접속하세요!${NC}"

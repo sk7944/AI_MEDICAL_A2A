@@ -301,10 +301,10 @@ def markdown_filter(text):
 
 if __name__ == '__main__':
     print("🚀 AI Medical A2A Consultation Web Server 시작")
-    print("📱 웹 인터페이스: http://localhost:5000")
-    print("🏥 시스템 상태: http://localhost:5000/health")
-    print("💬 의료 상담: http://localhost:5000/consult")
-    print("📋 상담 결과: http://localhost:5000/result")
+    print("📱 웹 인터페이스: http://localhost:8000")
+    print("🏥 시스템 상태: http://localhost:8000/health")
+    print("💬 의료 상담: http://localhost:8000/consult")
+    print("📋 상담 결과: http://localhost:8000/result")
     
     # 등록된 라우트 확인
     print("\n🔧 등록된 라우트:")
@@ -313,4 +313,4 @@ if __name__ == '__main__':
     
     # Waitress WSGI 서버 사용
     from waitress import serve
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host='0.0.0.0', port=8000)
